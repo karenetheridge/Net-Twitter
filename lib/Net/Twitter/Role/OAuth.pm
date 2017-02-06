@@ -37,10 +37,13 @@ has consumer_secret => ( isa => 'Str', is => 'ro', required => 1 );
 # url attributes
 for my $attribute ( qw/authentication_url authorization_url request_token_url access_token_url xauth_url/ ) {
     has $attribute => (
-        isa    => 'Str', is => 'rw', required => 1,
-        # inflate urls to URI objects when read
-        reader => { $attribute => sub { URI->new(shift->{$attribute}) } },
+        isa    => 'Str', is => 'ro', required => 1,
     );
+    # inflate urls to URI objects when read
+    around $attribute => sub {
+        my ($orig, $self) = (shift, shift);
+        return URI->new($self->$orig);
+    };
 }
 
 # token attributes
